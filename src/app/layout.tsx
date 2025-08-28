@@ -3,8 +3,8 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'MenuGuard',
-  description: 'Design your application menu and manage role-based access with AI-powered suggestions.',
+  title: 'Chaide',
+  description: 'Sueña con un mundo mejor',
 };
 
 export default function RootLayout({
