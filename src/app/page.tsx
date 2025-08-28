@@ -1,4 +1,5 @@
 
+
 'use client';
 
 import Image from 'next/image';
@@ -69,7 +70,7 @@ export default function LoginPage() {
           </CardHeader>
           <CardContent>
             <form action={formAction}>
-                <div className="space-y-4">
+                <div className="space-y-4 pt-6">
                   <div className="space-y-2">
                     <Label htmlFor="username">Usuario</Label>
                     <Input id="username" name="username" placeholder="Ingrese su usuario" required />
