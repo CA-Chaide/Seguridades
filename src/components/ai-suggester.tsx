@@ -1,7 +1,8 @@
 'use client';
 
 import React from 'react';
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState } from 'react';
+import { useFormStatus } from 'react-dom';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
@@ -27,7 +28,7 @@ function SubmitButton() {
 }
 
 export function AiSuggester() {
-  const [state, formAction] = useFormState(async (prevState: any, formData: FormData) => {
+  const [state, formAction] = useActionState(async (prevState: any, formData: FormData) => {
     const menuOption = formData.get('menuOption') as string;
     const userWorkflows = formData.get('userWorkflows') as string;
     if (!menuOption || !userWorkflows) {
