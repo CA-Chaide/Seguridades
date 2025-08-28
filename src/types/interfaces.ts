@@ -1,47 +1,84 @@
 
-// Este archivo contendrá todas las interfaces que antes estaban en
-// src/app/@core/models/inventario/interfaces.ts
-
-// NOTA: Es una suposición. El usuario no proveyó el archivo de interfaces.
-// Se crearán interfaces vacías para que el código compile.
-// Si el usuario provee las interfaces, este archivo se deberá actualizar.
+// Este archivo es autogenerado. No lo modifiques manually.
 
 export interface Aplicacion {
-    [key: string]: any;
+  codigo_aplicacion: string;
+  nombre_aplicacion: string;
+  estado: string;
 }
 
 export interface Clase {
-    [key: string]: any;
+  codigo_clase: number;
+  nombre_clase: string;
+  estado: string;
 }
 
 export interface Menu {
-    [key: string]: any;
+  codigo_menu: number;
+  codigo_padre: number;
+  nombre: string;
+  icono: string;
+  estado: string;
+  codigo_aplicacion: string;
 }
 
 export interface MenuTipoUsuario {
-    [key: string]: any;
+  codigo_menu_tipo_usuario: number;
+  estado: string;
+  usuario_modificacion: string;
+  fecha_modificacion: Date | string;
+  codigo_menu: number;
+  codigo_tipo_usuario: number;
 }
 
 export interface Permisos {
-    [key: string]: any;
+  codigo_permiso: number;
+  estado: string;
+  usuario_modificacion: string;
+  fecha_modificacion: Date | string;
+  codigo_tipo_permiso: number;
+  codigo_tipo_usuario: number;
 }
 
 export interface Propiedad {
-    [key: string]: any;
+  codigo_propiedad: number;
+  nombre_propiedad: string;
+  valor_propiedad: string;
+  estado: string;
+  codigo_aplicacion: string;
 }
 
 export interface TipoPermiso {
-    [key:string]: any;
+  codigo_tipo_permiso: number;
+  nombre_tipo_permiso: string;
+  mnemonico: string;
+  estado: string;
 }
 
 export interface TipoUsuario {
-    [key: string]: any;
+  codigo_tipo_usuario: number;
+  codigo_clase: number;
+  nombre_tipo_usuario: string;
+  estado: string;
+  usuario_modificacion: string;
+  fecha_modificacion: Date | string;
 }
 
 export interface TipoUsuarioAplicacion {
-    [key: string]: any;
+  codigo_tipo_usuario_aplicacion: number;
+  estado: string;
+  usuario_modificacion: string;
+  fecha_modificacion: Date | string;
+  codigo_aplicacion: string;
+  codigo_tipo_usuario: number;
 }
 
 export interface Usuario {
-    [key: string]: any;
+  codigo_usuario: number;
+  id_usuario: string;
+  condicion: string;
+  estado: string;
+  usuario_modificacion: string;
+  fecha_modificacion: Date | string;
+  codigo_tipo_usuario: number;
 }

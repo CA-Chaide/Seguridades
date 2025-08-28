@@ -1,30 +1,50 @@
 
-import type { Permisos } from "@/types/interfaces"; // Ajusta esta ruta si es necesario
+import type { Permisos } from "@/types/interfaces";
 import type { BodyListResponse } from "@/types/body-list-response";
 import type { BodyResponse } from "@/types/body-response";
-import { fetchAPI } from "./api-client";
+import { environment } from "@/environments/environments.prod";
 
-const API_ENDPOINT = '/api/permisos';
+const API_URL = `${environment.apiURL}/api/permisos`;
 
 export const permisosService = {
-  getAll(): Promise<BodyListResponse<Permisos>> {
-    return fetchAPI<BodyListResponse<Permisos>>(API_ENDPOINT);
+  async getAll(): Promise<BodyListResponse<Permisos>> {
+    const response = await fetch(API_URL);
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || 'Failed to fetch permisos');
+    }
+    return response.json();
   },
 
-  save(data: Permisos): Promise<BodyResponse<Permisos>> {
-    return fetchAPI<BodyResponse<Permisos>>(API_ENDPOINT, {
+  async getById(id: number | string): Promise<BodyResponse<Permisos>> {
+    const response = await fetch(`${API_URL}/${id}`);
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || `Failed to fetch permiso with id ${id}`);
+    }
+    return response.json();
+  },
+
+  async save(data: Permisos): Promise<BodyResponse<Permisos>> {
+    const response = await fetch(API_URL, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || 'Failed to save permiso');
+    }
+    return response.json();
   },
 
-  getById(id: number | string): Promise<BodyResponse<Permisos>> {
-    return fetchAPI<BodyResponse<Permisos>>(`${API_ENDPOINT}/${id}`);
-  },
-
-  delete(id: number | string): Promise<BodyResponse<Permisos>> {
-    return fetchAPI<BodyResponse<Permisos>>(`${API_ENDPOINT}/${id}`, {
+  async delete(id: number | string): Promise<void> {
+    const response = await fetch(`${API_URL}/${id}`, {
       method: 'DELETE',
     });
-  }
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || `Failed to delete permiso with id ${id}`);
+    }
+  },
 };

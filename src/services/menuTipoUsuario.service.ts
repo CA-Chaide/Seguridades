@@ -1,30 +1,50 @@
 
-import type { MenuTipoUsuario } from "@/types/interfaces"; // Ajusta esta ruta si es necesario
+import type { MenuTipoUsuario } from "@/types/interfaces";
 import type { BodyListResponse } from "@/types/body-list-response";
 import type { BodyResponse } from "@/types/body-response";
-import { fetchAPI } from "./api-client";
+import { environment } from "@/environments/environments.prod";
 
-const API_ENDPOINT = '/api/menu-tipo-usuario';
+const API_URL = `${environment.apiURL}/api/menu-tipo-usuario`;
 
 export const menuTipoUsuarioService = {
-  getAll(): Promise<BodyListResponse<MenuTipoUsuario>> {
-    return fetchAPI<BodyListResponse<MenuTipoUsuario>>(API_ENDPOINT);
+  async getAll(): Promise<BodyListResponse<MenuTipoUsuario>> {
+    const response = await fetch(API_URL);
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || 'Failed to fetch menu-tipo-usuario');
+    }
+    return response.json();
   },
 
-  save(data: MenuTipoUsuario): Promise<BodyResponse<MenuTipoUsuario>> {
-    return fetchAPI<BodyResponse<MenuTipoUsuario>>(API_ENDPOINT, {
+  async getById(id: number | string): Promise<BodyResponse<MenuTipoUsuario>> {
+    const response = await fetch(`${API_URL}/${id}`);
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || `Failed to fetch menu-tipo-usuario with id ${id}`);
+    }
+    return response.json();
+  },
+
+  async save(data: MenuTipoUsuario): Promise<BodyResponse<MenuTipoUsuario>> {
+    const response = await fetch(API_URL, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || 'Failed to save menu-tipo-usuario');
+    }
+    return response.json();
   },
 
-  getById(id: number | string): Promise<BodyResponse<MenuTipoUsuario>> {
-    return fetchAPI<BodyResponse<MenuTipoUsuario>>(`${API_ENDPOINT}/${id}`);
-  },
-
-  delete(id: number | string): Promise<BodyResponse<MenuTipoUsuario>> {
-    return fetchAPI<BodyResponse<MenuTipoUsuario>>(`${API_ENDPOINT}/${id}`, {
+  async delete(id: number | string): Promise<void> {
+    const response = await fetch(`${API_URL}/${id}`, {
       method: 'DELETE',
     });
-  }
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || `Failed to delete menu-tipo-usuario with id ${id}`);
+    }
+  },
 };

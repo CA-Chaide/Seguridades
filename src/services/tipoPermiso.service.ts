@@ -1,30 +1,50 @@
 
-import type { TipoPermiso } from "@/types/interfaces"; // Ajusta esta ruta si es necesario
+import type { TipoPermiso } from "@/types/interfaces";
 import type { BodyListResponse } from "@/types/body-list-response";
 import type { BodyResponse } from "@/types/body-response";
-import { fetchAPI } from "./api-client";
+import { environment } from "@/environments/environments.prod";
 
-const API_ENDPOINT = '/api/tipo-permiso';
+const API_URL = `${environment.apiURL}/api/tipo-permiso`;
 
 export const tipoPermisoService = {
-  getAll(): Promise<BodyListResponse<TipoPermiso>> {
-    return fetchAPI<BodyListResponse<TipoPermiso>>(API_ENDPOINT);
+  async getAll(): Promise<BodyListResponse<TipoPermiso>> {
+    const response = await fetch(API_URL);
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || 'Failed to fetch tipo-permisos');
+    }
+    return response.json();
   },
 
-  save(data: TipoPermiso): Promise<BodyResponse<TipoPermiso>> {
-    return fetchAPI<BodyResponse<TipoPermiso>>(API_ENDPOINT, {
+  async getById(id: number | string): Promise<BodyResponse<TipoPermiso>> {
+    const response = await fetch(`${API_URL}/${id}`);
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || `Failed to fetch tipo-permiso with id ${id}`);
+    }
+    return response.json();
+  },
+
+  async save(data: TipoPermiso): Promise<BodyResponse<TipoPermiso>> {
+    const response = await fetch(API_URL, {
       method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
     });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || 'Failed to save tipo-permiso');
+    }
+    return response.json();
   },
 
-  getById(id: number | string): Promise<BodyResponse<TipoPermiso>> {
-    return fetchAPI<BodyResponse<TipoPermiso>>(`${API_ENDPOINT}/${id}`);
-  },
-
-  delete(id: number | string): Promise<BodyResponse<TipoPermiso>> {
-    return fetchAPI<BodyResponse<TipoPermiso>>(`${API_ENDPOINT}/${id}`, {
+  async delete(id: number | string): Promise<void> {
+    const response = await fetch(`${API_URL}/${id}`, {
       method: 'DELETE',
     });
-  }
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || `Failed to delete tipo-permiso with id ${id}`);
+    }
+  },
 };
