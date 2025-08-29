@@ -21,7 +21,7 @@ const menuItems = [
                 icon: BookUser,
                 children: [
                     { label: 'Perfiles', path: '/dashboard/profiles', icon: Shield },
-                    { label: 'Tipos de Roles', path: '/dashboard/role-types', icon: Shield },
+                    { label: 'Tipos de Roles', path: '/dashboard/role-types', icon: BookUser },
                     { label: 'Tipos de Usuarios', path: '/dashboard/user-types', icon: Users },
                 ],
             },
