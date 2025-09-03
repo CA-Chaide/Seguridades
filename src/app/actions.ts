@@ -20,17 +20,19 @@ export async function login(previousState: any, formData: FormData) {
     const usuario = formData.get('username') as string;
     const contrasena = formData.get('password') as string;
 
+    console.log("Intentando iniciar sesión con Usuario: ", usuario);
+
     if (!usuario || !contrasena) {
       return { success: false, message: 'El usuario y la contraseña son obligatorios.' };
     }
 
     try {
         const response = await authService.login({ usuario, contrasena });
-        console.log('API Response:', response);
-        // Successful login
+        console.log('Respuesta de la API:', response);
+        // Asumiendo que una respuesta exitosa no lanza error
         return { success: true, message: 'Inicio de sesión exitoso.' };
     } catch (error) {
-        console.error('Login error:', error);
+        console.error('Error de inicio de sesión:', error);
         const message = error instanceof Error ? error.message : 'Error desconocido.';
         return { success: false, message };
     }
