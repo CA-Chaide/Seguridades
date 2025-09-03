@@ -18,6 +18,7 @@ export interface Menu {
   codigo_padre: number;
   nombre: string;
   icono: string;
+  path: string;
   estado: string;
   codigo_aplicacion: string;
 }
@@ -81,4 +82,26 @@ export interface Usuario {
   usuario_modificacion: string;
   fecha_modificacion: Date | string;
   codigo_tipo_usuario: number;
+}
+
+export interface UsuarioTipoUsuario {
+  codigo_usuario_tipo_usuario: number;
+  estado: string;
+  codigo_usuario: number;
+  codigo_tipo_usuario: number;
+}
+
+export interface Auth {
+  message: string;
+  token: string;
+  expiresIn: string;
+  user:User;
+  perfiles: any;
+}
+
+export interface User {
+  codigo_usuario: number;
+  usuario: string;
+  correo_usuario: string;
+  condicion: string;
 }
