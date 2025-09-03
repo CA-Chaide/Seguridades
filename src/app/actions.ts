@@ -3,6 +3,7 @@
 
 import { suggestRoleAssignments, type SuggestRoleAssignmentsInput } from '@/ai/flows/suggest-role-assignments';
 import { redirect } from 'next/navigation';
+import { authService } from '@/services/auth.service';
 
 export async function getRoleSuggestions(input: SuggestRoleAssignmentsInput) {
   try {
@@ -16,12 +17,21 @@ export async function getRoleSuggestions(input: SuggestRoleAssignmentsInput) {
 }
 
 export async function login(previousState: any, formData: FormData) {
-    const username = formData.get('username');
-    const password = formData.get('password');
+    const usuario = formData.get('username') as string;
+    const contrasena = formData.get('password') as string;
 
-    if (username === 'admin' && password === 'admin') {
-        return { success: true, message: 'Login successful' };
+    if (!usuario || !contrasena) {
+      return { success: false, message: 'El usuario y la contraseña son obligatorios.' };
     }
 
-    return { success: false, message: 'Usuario o contraseña incorrectos.' };
+    try {
+        const response = await authService.login({ usuario, contrasena });
+        console.log('API Response:', response);
+        // Successful login
+        return { success: true, message: 'Inicio de sesión exitoso.' };
+    } catch (error) {
+        console.error('Login error:', error);
+        const message = error instanceof Error ? error.message : 'Error desconocido.';
+        return { success: false, message };
+    }
 }
