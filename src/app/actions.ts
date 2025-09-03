@@ -16,12 +16,13 @@ export async function getRoleSuggestions(input: SuggestRoleAssignmentsInput) {
   }
 }
 
-export async function login(previousState: any, formData: FormData) {
+
+export async function loginAction(previousState: any, formData: FormData) {
     const usuario = formData.get('usuario') as string;
     const contrasena = formData.get('password') as string;
 
     console.log("Intentando iniciar sesión con Usuario: ", usuario, " y Contraseña: ", contrasena);
-
+    
     if (!usuario || !contrasena) {
       return { success: false, message: 'El usuario y la contraseña son obligatorios.' };
     }
@@ -31,7 +32,7 @@ export async function login(previousState: any, formData: FormData) {
         console.log('Respuesta de la API:', response);
         
         if (response && response.token) {
-          return { success: true, message: 'Inicio de sesión exitoso.' };
+          redirect('/dashboard');
         } else {
           return { success: false, message: response.message || 'Credenciales incorrectas.' };
         }
