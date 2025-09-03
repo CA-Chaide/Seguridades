@@ -29,8 +29,13 @@ export async function login(previousState: any, formData: FormData) {
     try {
         const response = await authService.login({ usuario, contrasena });
         console.log('Respuesta de la API:', response);
-        // Asumiendo que una respuesta exitosa no lanza error
-        return { success: true, message: 'Inicio de sesión exitoso.' };
+        
+        if (response && response.token) {
+          return { success: true, message: 'Inicio de sesión exitoso.' };
+        } else {
+          return { success: false, message: response.message || 'Credenciales incorrectas.' };
+        }
+
     } catch (error) {
         console.error('Error de inicio de sesión:', error);
         const message = error instanceof Error ? error.message : 'Error desconocido.';
