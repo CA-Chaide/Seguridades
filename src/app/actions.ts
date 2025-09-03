@@ -20,7 +20,7 @@ export async function login(previousState: any, formData: FormData) {
     const usuario = formData.get('usuario') as string;
     const contrasena = formData.get('password') as string;
 
-    console.log("Intentando iniciar sesión con Usuario: ", usuario);
+    console.log("Intentando iniciar sesión con Usuario: ", usuario, " y Contraseña: ", contrasena);
 
     if (!usuario || !contrasena) {
       return { success: false, message: 'El usuario y la contraseña son obligatorios.' };

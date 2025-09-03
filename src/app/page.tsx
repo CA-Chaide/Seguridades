@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { useActionState } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
 import { login } from '@/app/actions';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { AlertTriangle } from 'lucide-react';
@@ -35,9 +35,19 @@ const initialState = {
   message: '',
 };
 
+function SubmitButton() {
+    const { pending } = useFormStatus();
+    return (
+        <Button type="submit" className="w-full" disabled={pending}>
+            {pending ? 'Ingresando...' : 'Ingresar'}
+        </Button>
+    );
+}
+
+
 export default function LoginPage() {
     const router = useRouter();
-    const [state, formAction, isPending] = useActionState(login, initialState);
+    const [state, formAction] = useFormState(login, initialState);
 
     useEffect(() => {
         if (state.success) {
@@ -88,9 +98,7 @@ export default function LoginPage() {
                       </AlertDescription>
                     </Alert>
                   )}
-                  <Button type="submit" className="w-full" disabled={isPending}>
-                    {isPending ? 'Ingresando...' : 'Ingresar'}
-                  </Button>
+                  <SubmitButton />
                 </div>
             </form>
           </CardContent>
