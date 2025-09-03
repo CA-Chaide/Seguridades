@@ -72,8 +72,8 @@ export default function LoginPage() {
             <form action={formAction}>
                 <div className="space-y-4 pt-6">
                   <div className="space-y-2">
-                    <Label htmlFor="username">Usuario</Label>
-                    <Input id="username" name="username" placeholder="Ingrese su usuario" required />
+                    <Label htmlFor="email">Email</Label>
+                    <Input id="email" name="email" placeholder="Ingrese su email" required />
                   </div>
                   <div className="space-y-2">
                     <Label htmlFor="password">Contraseña</Label>

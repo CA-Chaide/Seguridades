@@ -17,13 +17,13 @@ export async function getRoleSuggestions(input: SuggestRoleAssignmentsInput) {
 }
 
 export async function login(previousState: any, formData: FormData) {
-    const usuario = formData.get('username') as string;
+    const usuario = formData.get('email') as string;
     const contrasena = formData.get('password') as string;
 
     console.log("Intentando iniciar sesión con Usuario: ", usuario);
 
     if (!usuario || !contrasena) {
-      return { success: false, message: 'El usuario y la contraseña son obligatorios.' };
+      return { success: false, message: 'El email y la contraseña son obligatorios.' };
     }
 
     try {
