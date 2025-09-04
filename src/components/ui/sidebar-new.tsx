@@ -36,7 +36,7 @@ export const Sidebar = React.forwardRef<
                 ref={ref}
                 className={cn(
                 'relative bg-primary text-primary-foreground transition-all duration-300 ease-in-out flex flex-col',
-                isCollapsed ? 'w-16' : 'w-64',
+                isCollapsed ? 'w-16' : 'w-80',
                 className
                 )}
                 {...props}
@@ -68,8 +68,8 @@ export const SidebarHeader = React.forwardRef<
         <div
             ref={ref}
             className={cn(
-            'p-4 transition-opacity duration-300',
-            isCollapsed && 'opacity-0 h-0 p-0',
+            'p-4 transition-all duration-300 flex flex-col items-center',
+            isCollapsed && 'p-2',
             className
             )}
             {...props}

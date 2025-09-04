@@ -7,8 +7,8 @@ const API_URL = `${environment.apiURL}/api/auths/login`;
 
 // Define a type for the login credentials
 type LoginCredentials = {
-  usuario: string;
-  contrasena: string;
+  email: string;
+  password: string;
 };
 
 export const authService = {
@@ -16,7 +16,10 @@ export const authService = {
     const response = await fetch(API_URL, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(credentials),
+      body: JSON.stringify({
+        email: credentials.email,
+        password: credentials.password,
+      }),
     });
 
     if (!response.ok) {

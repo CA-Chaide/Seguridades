@@ -4,7 +4,7 @@ import type { BodyListResponse } from "@/types/body-list-response";
 import type { BodyResponse } from "@/types/body-response";
 import { environment } from "@/environments/environments.prod";
 
-const API_URL = `${environment.apiURL}/api/menu`;
+const API_URL = `${environment.apiURL}/api/menus`;
 
 export const menuService = {
   async getAll(): Promise<BodyListResponse<Menu>> {
@@ -21,6 +21,19 @@ export const menuService = {
     if (!response.ok) {
       const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
       throw new Error(errorBody.message || `Failed to fetch menu with id ${id}`);
+    }
+    return response.json();
+  },
+
+  async getMenuByCodigoTipoUsuario(codigo: number | string): Promise<BodyResponse<Menu>> {
+    const response = await fetch(API_URL + "/menu-tree", {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ codigo_tipo_usuario: codigo }),
+    });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || `Failed to fetch menu with codigo ${codigo}`);
     }
     return response.json();
   },
