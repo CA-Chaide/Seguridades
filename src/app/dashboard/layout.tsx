@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/collapsible"
 import { ChevronsUpDown, BookUser, Shield, Users, Settings, Building, MenuSquare, UserCog, UserPlus, Minus, LogOut, CircleUser, AppWindow } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { menuService } from '@/services/menu.service';
 // (LogoutButton preserved in repo but not used here; we implement custom panel UI)
 
@@ -109,10 +110,11 @@ function toRecursiveItems(nodes: MenuNode[]): any[] {
 
 const RecursiveMenu = ({ items, level = 0 }: { items: any[], level?: number }) => {
     const { isCollapsed } = useSidebar();
+    const pathname = usePathname();
     return (
         <div className="w-full" style={{ paddingLeft: level > 0 && !isCollapsed ? '1rem' : '0' }}>
             {items.map((item, index) => (
-                <Collapsible key={index} className={isCollapsed ? 'w-full flex justify-center' : 'w-full'}>
+                <Collapsible key={index} className={isCollapsed ? 'w-full flex justify-center' : 'w-full'} defaultOpen>
                     {item.children ? (
                         <>
                             <CollapsibleTrigger className={isCollapsed ? 'w-10 h-10 flex items-center justify-center rounded-md hover:bg-primary-foreground/10' : 'w-full'} title={isCollapsed ? item.label : undefined}>
@@ -134,6 +136,7 @@ const RecursiveMenu = ({ items, level = 0 }: { items: any[], level?: number }) =
                         <SidebarMenuItem>
                             <SidebarMenuButton
                                 href={item.path || '#'}
+                                active={item.path && pathname?.startsWith(item.path)}
                                 className={isCollapsed ? 'h-10 w-10 justify-center' : 'justify-start pl-4 h-9'}
                                 title={isCollapsed ? item.label : undefined}
                             >

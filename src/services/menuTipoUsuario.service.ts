@@ -4,7 +4,7 @@ import type { BodyListResponse } from "@/types/body-list-response";
 import type { BodyResponse } from "@/types/body-response";
 import { environment } from "@/environments/environments.prod";
 
-const API_URL = `${environment.apiURL}/api/menu-tipo-usuario`;
+const API_URL = `${environment.apiURL}/api/menu-tipo-usuarios`;
 
 export const menuTipoUsuarioService = {
   async getAll(): Promise<BodyListResponse<MenuTipoUsuario>> {

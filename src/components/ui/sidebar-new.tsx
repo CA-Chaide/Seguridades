@@ -118,8 +118,9 @@ export const SidebarMenuButton = React.forwardRef<
   HTMLAnchorElement,
   React.AnchorHTMLAttributes<HTMLAnchorElement> & {
     href: string;
+    active?: boolean;
   }
->(({ className, children, ...props }, ref) => {
+>(({ className, children, active = false, ...props }, ref) => {
     const { isCollapsed } = useSidebar();
     const childrenArray = React.Children.toArray(children);
     const icon = childrenArray[0];
@@ -129,7 +130,10 @@ export const SidebarMenuButton = React.forwardRef<
     <a
       ref={ref}
       className={cn(
-        'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground transition-colors',
+        'flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors',
+        active
+          ? 'bg-primary-foreground/10 text-green-300 hover:text-green-200 hover:bg-primary-foreground/15'
+          : 'text-primary-foreground/80 hover:bg-primary-foreground/10 hover:text-primary-foreground',
         isCollapsed && 'justify-center',
         className
       )}
