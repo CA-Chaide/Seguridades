@@ -38,7 +38,7 @@ export interface Permisos {
   usuario_modificacion: string;
   fecha_modificacion: Date | string;
   codigo_tipo_permiso: number;
-  codigo_tipo_usuario: number;
+  codigo_menu_tipo_usuario: number;
 }
 
 export interface Propiedad {

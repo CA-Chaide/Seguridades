@@ -4,7 +4,7 @@ import type { BodyListResponse } from "@/types/body-list-response";
 import type { BodyResponse } from "@/types/body-response";
 import { environment } from "@/environments/environments.prod";
 
-const API_URL = `${environment.apiURL}/api/usuario`;
+const API_URL = `${environment.apiURL}/api/usuarios`;
 
 export const usuarioService = {
   async getAll(): Promise<BodyListResponse<Usuario>> {
@@ -47,4 +47,27 @@ export const usuarioService = {
       throw new Error(errorBody.message || `Failed to delete usuario with id ${id}`);
     }
   },
+
+  async getFichasPersonas(): Promise<BodyResponse<any>> {
+    const response = await fetch(`${API_URL}/fichasUsuarios`);
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || `Failed to fetch fichas for usuarios`);
+    }
+    return response.json();
+  },
+
+  async getPerfilesUsuario(data: string): Promise<BodyResponse<any>> {
+    const response = await fetch(`${API_URL}/usuarioByCodigoEmpleadoRT`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({codigo_empleado : data}),
+    });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || 'Failed to save usuario');
+    }
+    return response.json();
+  },
+
 };

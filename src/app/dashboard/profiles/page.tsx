@@ -112,6 +112,8 @@ export default function ProfilesPage() {
     setSaving(true); setError(null);
     try {
   console.debug('Submit Perfil payload draft', form.data);
+      // capture previous state for comparison (only relevant in edit mode)
+      const prevItem = form.mode === 'edit' ? items.find(it => it.codigo_tipo_usuario === Number(form.data.codigo_tipo_usuario)) : undefined;
       const payload: TipoUsuario = {
         codigo_tipo_usuario: form.mode === 'edit' ? Number(form.data.codigo_tipo_usuario) : Number(form.data.codigo_tipo_usuario) || 0,
         codigo_clase: Number(form.data.codigo_clase),
@@ -130,44 +132,69 @@ export default function ProfilesPage() {
         return [saved, ...prev];
       });
 
-      // Asociación aplicación-perfil
+      // Asociación aplicación-perfil: crear/update sólo después de que tipo_usuario se haya guardado
       if (form.data.codigo_aplicacion) {
+        const assocPayloadBase = {
+          codigo_aplicacion: form.data.codigo_aplicacion,
+          codigo_tipo_usuario: newId,
+          estado: 'A',
+          usuario_modificacion: loggedUser || 'system',
+          fecha_modificacion: new Date().toISOString(),
+        } as any;
+
         if (form.mode === 'new') {
-          // Siempre crear nueva asociación
+          // Crear nueva asociación
           const assocPayload: TipoUsuarioAplicacion = {
             codigo_tipo_usuario_aplicacion: 0,
-            codigo_aplicacion: form.data.codigo_aplicacion,
-            codigo_tipo_usuario: newId,
-            estado: 'A',
-            usuario_modificacion: '',
-            fecha_modificacion: '',
+            ...assocPayloadBase,
           } as any;
           try {
             await tipoUsuarioAplicacionService.save(assocPayload);
-          } catch { /* ignore association error */ }
+          } catch (assocErr: any) {
+            console.error('Error creando tipo_usuario_aplicacion', assocErr);
+            toast({ title: 'Asociación no creada', description: assocErr?.message || 'No se pudo crear la asociación aplicación-perfil', variant: 'destructive' });
+          }
         } else if (form.mode === 'edit') {
           try {
             const respAssoc = await tipoUsuarioAplicacionService.getByCodigoTipoUsuario(String(newId));
             const assocList: any[] = Array.isArray(respAssoc.data) ? respAssoc.data : [];
-            const currentAssoc = assocList[0]; // asumiendo 1 a 1 actual
-            if (currentAssoc && currentAssoc.codigo_aplicacion !== form.data.codigo_aplicacion) {
+            const currentAssoc = assocList[0]; // asumimos 1 a 1 o tomamos la primera
+
+            const nameChanged = !!prevItem && prevItem.nombre_tipo_usuario !== saved.nombre_tipo_usuario;
+            const appChanged = !!currentAssoc && currentAssoc.codigo_aplicacion !== form.data.codigo_aplicacion;
+
+            if (!currentAssoc) {
+              // no existía asociación: crear
+              const assocPayload: TipoUsuarioAplicacion = {
+                codigo_tipo_usuario_aplicacion: 0,
+                ...assocPayloadBase,
+              } as any;
+              await tipoUsuarioAplicacionService.save(assocPayload);
+            } else if (nameChanged || appChanged) {
+              // actualizar la asociación existente (actualizamos metadata y código de aplicación si cambió)
               const updatePayload: TipoUsuarioAplicacion = {
                 ...currentAssoc,
-                codigo_aplicacion: form.data.codigo_aplicacion,
+                codigo_aplicacion: form.data.codigo_aplicacion ?? currentAssoc.codigo_aplicacion,
                 usuario_modificacion: loggedUser || 'system',
                 fecha_modificacion: new Date().toISOString(),
-              };
+              } as any;
               await tipoUsuarioAplicacionService.save(updatePayload as any);
             }
-          } catch { /* ignore */ }
+          } catch (assocErr: any) {
+            console.error('Error actualizando tipo_usuario_aplicacion', assocErr);
+            toast({ title: 'Asociación no actualizada', description: assocErr?.message || 'No se pudo actualizar la asociación aplicación-perfil', variant: 'destructive' });
+          }
         }
+
         // Refrescar asociaciones para reflejar cambio
         try {
           const respAssocReload = await tipoUsuarioAplicacionService.getByCodigoTipoUsuario(String(newId));
           const listReload: any[] = Array.isArray(respAssocReload.data) ? respAssocReload.data : [];
           const codes = listReload.map(r => r.codigo_aplicacion).filter(Boolean);
           setAppsByTipoUsuario(prev => ({ ...prev, [newId]: codes }));
-        } catch { /* ignore */ }
+        } catch (reloadErr: any) {
+          console.error('Error recargando asociaciones', reloadErr);
+        }
       }
   startNew();
   toast({ title: 'Perfil guardado', description: `Perfil ${saved.nombre_tipo_usuario} (${newId}) guardado correctamente.`, variant: 'success' });

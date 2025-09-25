@@ -15,7 +15,11 @@ export const LogoutButton: React.FC<LogoutButtonProps> = ({ className, variant =
   const handleLogout = () => {
     try {
       localStorage.removeItem('token');
-    } catch {}
+      localStorage.removeItem('user');
+      localStorage.clear(); // Eliminar todas las variables de sesión
+    } catch (error) {
+      console.error('Error al limpiar localStorage:', error);
+    }
     window.location.href = '/';
   };
 

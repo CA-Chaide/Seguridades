@@ -2,6 +2,7 @@
 
 import { AppShell, AppShellContent, AppShellHeader } from '@/components/layout/app-shell';
 import { Sidebar, SidebarContent, SidebarHeader, SidebarMenu, SidebarMenuItem, SidebarMenuButton, useSidebar } from '@/components/ui/sidebar-new';
+import { ProtectedRoute } from '@/components/protected-route';
 import Image from 'next/image';
 import {
     Collapsible,
@@ -10,8 +11,9 @@ import {
 } from "@/components/ui/collapsible"
 import { ChevronsUpDown, BookUser, Shield, Users, Settings, Building, MenuSquare, UserCog, UserPlus, Minus, LogOut, CircleUser, AppWindow } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { menuService } from '@/services/menu.service';
+import { useToast } from '@/hooks/use-toast';
 // (LogoutButton preserved in repo but not used here; we implement custom panel UI)
 
 
@@ -215,7 +217,14 @@ function UserPanel() {
     const avatarText = (displayName || '?').trim().charAt(0).toUpperCase();
 
     const handleLogout = () => {
-        try { localStorage.removeItem('token'); } catch {}
+        try {
+            localStorage.removeItem('token');
+            localStorage.removeItem('user');
+            localStorage.removeItem('perfilesAutorizados');
+            localStorage.clear(); // Eliminar todas las variables de sesión
+        } catch (error) {
+            console.error('Error al limpiar localStorage:', error);
+        }
         window.location.href = '/';
     };
 
@@ -264,14 +273,20 @@ export default function DashboardLayout({
     const [menuItems, setMenuItems] = useState<any[]>([]);
     const [menuLoading, setMenuLoading] = useState<boolean>(true);
     const [menuError, setMenuError] = useState<string | null>(null);
+    const { toast } = useToast();
+    const router = useRouter();
 
     useEffect(() => {
         const loadMenus = async () => {
             try {
                 const perfilesAutorizadosStr = typeof window !== 'undefined' ? localStorage.getItem('perfilesAutorizados') : null;
                 if (!perfilesAutorizadosStr) {
-                    setMenuItems([]);
-                    setMenuLoading(false);
+                    toast({
+                        title: "Sin permisos de menú",
+                        description: "No tienes perfiles autorizados para acceder al sistema",
+                        variant: "destructive",
+                    });
+                    router.push('/');
                     return;
                 }
                 const perfiles: any[] = JSON.parse(perfilesAutorizadosStr);
@@ -279,8 +294,12 @@ export default function DashboardLayout({
                     .map(p => p?.tipo_usuario?.codigo_tipo_usuario || p?.codigo_tipo_usuario || p?.codigoTipoUsuario || p?.codigo || p?.id)
                     .filter(Boolean);
                 if (!codigoList.length) {
-                    setMenuItems([]);
-                    setMenuLoading(false);
+                    toast({
+                        title: "Sin códigos de perfil",
+                        description: "No se encontraron códigos válidos en tus perfiles autorizados",
+                        variant: "destructive",
+                    });
+                    router.push('/');
                     return;
                 }
                 // Llamadas en paralelo; ignorar individuales fallidas pero registrar si todas fallan
@@ -296,50 +315,74 @@ export default function DashboardLayout({
                     } catch { /* ignorar error individual */ }
                 }));
                 if (!results.length) {
-                    setMenuError('No se pudo cargar el menú para los perfiles.');
-                    setMenuItems([]);
+                    toast({
+                        title: "Sin menú disponible",
+                        description: "No se pudo cargar el menú para tus perfiles. Contacta al administrador del sistema",
+                        variant: "destructive",
+                    });
+                    router.push('/');
+                    return;
                 } else {
                     const merged = mergeMenuTrees(results);
                     const active = filterActive(merged);
-                    setMenuItems(toRecursiveItems(active));
+                    const menuItemsResult = toRecursiveItems(active);
+                    
+                    // Verificar que después del filtrado aún tengamos elementos de menú
+                    if (!menuItemsResult.length) {
+                        toast({
+                            title: "Sin opciones de menú",
+                            description: "No tienes opciones de menú activas disponibles",
+                            variant: "destructive",
+                        });
+                        router.push('/');
+                        return;
+                    }
+                    
+                    setMenuItems(menuItemsResult);
                 }
             } catch (err: any) {
-                setMenuError(err?.message || 'Error inesperado al cargar el menú.');
-                setMenuItems([]);
+                toast({
+                    title: "Error cargando menú",
+                    description: err?.message || 'Error inesperado al cargar el menú del sistema',
+                    variant: "destructive",
+                });
+                router.push('/');
             } finally {
                 setMenuLoading(false);
             }
         };
         loadMenus();
-    }, []);
+    }, [toast, router]);
 
     return (
-        <div className="flex min-h-screen w-full bg-background">
-            <Sidebar>
-                <SidebarHeader>
-                    <LogoSection />
-                </SidebarHeader>
-                <SidebarContent>
-                    <SidebarMenu>
-                        {menuLoading && (
-                            <div className="text-xs text-white/70 px-2 py-1">Cargando menú...</div>
-                        )}
-                        {!menuLoading && menuError && (
-                            <div className="text-xs text-red-200 px-2 py-1">{menuError}</div>
-                        )}
-                        {!menuLoading && !menuError && menuItems.length > 0 && (
-                            <RecursiveMenu items={menuItems} />
-                        )}
-                        {!menuLoading && !menuError && menuItems.length === 0 && (
-                            <div className="text-xs text-white/60 px-2 py-1">Sin opciones de menú</div>
-                        )}
-                    </SidebarMenu>
-                </SidebarContent>
-                <UserPanel />
-            </Sidebar>
-            <div className="flex flex-col flex-1">
-                {children}
+        <ProtectedRoute>
+            <div className="flex min-h-screen w-full bg-background">
+                <Sidebar>
+                    <SidebarHeader>
+                        <LogoSection />
+                    </SidebarHeader>
+                    <SidebarContent>
+                        <SidebarMenu>
+                            {menuLoading && (
+                                <div className="text-xs text-white/70 px-2 py-1">Cargando menú...</div>
+                            )}
+                            {!menuLoading && menuError && (
+                                <div className="text-xs text-red-200 px-2 py-1">{menuError}</div>
+                            )}
+                            {!menuLoading && !menuError && menuItems.length > 0 && (
+                                <RecursiveMenu items={menuItems} />
+                            )}
+                            {!menuLoading && !menuError && menuItems.length === 0 && (
+                                <div className="text-xs text-white/60 px-2 py-1">Sin opciones de menú</div>
+                            )}
+                        </SidebarMenu>
+                    </SidebarContent>
+                    <UserPanel />
+                </Sidebar>
+                <div className="flex flex-col flex-1">
+                    {children}
+                </div>
             </div>
-        </div>
+        </ProtectedRoute>
     )
 }

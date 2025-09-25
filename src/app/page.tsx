@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
+import { Eye, EyeOff } from 'lucide-react';
 import { Label } from '@/components/ui/label';
 import { useState } from 'react';
 import { authService } from '@/services/auth.service';
@@ -44,6 +45,7 @@ function SubmitButton({ pending }: { pending: boolean }) {
 export default function LoginPage() {
     const [state, setState] = useState(initialState);
     const [pending, setPending] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
     const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -180,7 +182,24 @@ export default function LoginPage() {
                                 </div>
                                 <div className="space-y-2">
                                     <Label htmlFor="password">Contraseña</Label>
-                                    <Input id="password" name="password" type="password" placeholder="Ingrese su contraseña" required />
+                                    <div className="relative">
+                                        <Input
+                                            id="password"
+                                            name="password"
+                                            type={showPassword ? 'text' : 'password'}
+                                            placeholder="Ingrese su contraseña"
+                                            required
+                                        />
+                                        <button
+                                            type="button"
+                                            tabIndex={-1}
+                                            className="absolute right-2 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary focus:outline-none"
+                                            onClick={() => setShowPassword((v) => !v)}
+                                            aria-label={showPassword ? 'Ocultar contraseña' : 'Mostrar contraseña'}
+                                        >
+                                            {showPassword ? <EyeOff className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
+                                        </button>
+                                    </div>
                                 </div>
                                 {state && !state.success && state.message && (
                                     <Alert variant="destructive">

@@ -3,7 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 
 export const metadata: Metadata = {
-  title: 'Chaide',
+  title: 'Chaide - Módulo de Seguridad',
   description: 'Sueña con un mundo mejor',
 };
 

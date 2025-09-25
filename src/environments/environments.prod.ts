@@ -8,7 +8,7 @@ export const environment = {
     nombreAplicacion: "APP_SEGURIDADES",
     //apiURL : '/seguridades/api',
     //apiURL : 'http://localhost:5400',
-    apiURL : 'https://apps.chaide.com/seguridades/api',
+    apiURL : 'https://apps.chaide.com/seguridades',
 
     tituloSistema: 'SISTEMA INTEGRADO DE SEGURIDADES',
 };

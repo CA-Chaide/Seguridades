@@ -25,6 +25,20 @@ export const menuTipoUsuarioService = {
     return response.json();
   },
 
+  async getOpcionesByCodigoTipoUsuario(data: (number | string)): Promise<BodyResponse<MenuTipoUsuario>> {
+    const response = await fetch(`${API_URL}/opciones`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({codigo_tipo_usuario: data}),
+    });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || 'Failed to save menu-tipo-usuario');
+    }
+    return response.json();
+  },
+  
+
   async save(data: MenuTipoUsuario): Promise<BodyResponse<MenuTipoUsuario>> {
     const response = await fetch(API_URL, {
       method: 'POST',

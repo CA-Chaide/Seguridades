@@ -38,6 +38,19 @@ export const menuService = {
     return response.json();
   },
 
+  async getMenuCodigoAplicacion(codigo: string): Promise<BodyListResponse<Menu>> {
+    const response = await fetch(`${API_URL}/by-aplicacion`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ codigo_aplicacion: codigo }),
+    });
+    if (!response.ok) {
+      const errorBody = await response.json().catch(() => ({ message: 'Error desconocido' }));
+      throw new Error(errorBody.message || `Failed to fetch menu with codigo ${codigo}`);
+    }
+    return response.json();
+  },
+
   async save(data: Menu): Promise<BodyResponse<Menu>> {
     const response = await fetch(API_URL, {
       method: 'POST',
